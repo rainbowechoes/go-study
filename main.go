@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/rainbowechoes/go-study/obj"
+	"github.com/rainbowechoes/go-study/parallel"
 )
 
 func personDoSports(person *obj.Person) {
@@ -57,5 +59,19 @@ func main() {
 	plj, ok := pluginJ.(*obj.PluginJ)
 	if ok {
 		plj.Uninstall()
+	}
+
+	nums := []int{1, 2, 3, 4, 5, 6, 7, 8, 10}
+
+	streamChan := make(chan int)
+	outChan := make(chan string)
+
+	go parallel.StreamOf(nums, streamChan)
+	go parallel.MapToStr(streamChan, outChan, func(num int) string {
+		return strconv.Itoa(num * num)
+	})
+
+	for i := range outChan {
+		fmt.Printf("out is %s\n", i)
 	}
 }
